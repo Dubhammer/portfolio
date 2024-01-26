@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Pollution Forecast</title>
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css" />
+    <link rel="stylesheet" href="./css/design.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="https://openweathermap.org/img/wn/02d@2x.png">
+</head>
+
+<body>
+    <!-- Welcom splash. Disabled until geolocation prompt is handled by the user. -->
+    <div id="dashboard">
+        <div id="title">
+            <div id="logo">
+                <img src="./img/logo.svg">
+            </div>
+            <div id="nav">
+                <!-- <h3><b>5 Day Air Pollution Tracker</b></h3> -->
+            </div>
+        </div>
+
+
+        <div id="cta">
+            <div id="tag">
+                <h2><b>#BreatheEasy</b> with the Air Pollution Tracker</h2>
+            </div>
+        </div>
+        <!-- https://www.pexels.com/photo/an-elderly-couple-meditating-in-the-park-8940499/ -->
+        <div id="splash" class="bgimg">
+        </div>
+
+
+        <div id="maptitle">
+            <div>
+                <h3><b>5 Day Forecast</b></h3>
+            </div>
+        </div>
+        <div id="airquality"></div>
+        <div id="collapse">
+            <p>Legend &#9660;</p>
+        </div>
+        <div id="legend">
+            <table class="stats">
+                <thead>
+                    <tr>
+                        <th colspan="2">Index</th>
+                        <th colspan="7">Pollutant concentration in μg/m<sup>3</sup></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td>CO</td>
+                        <td>NO<sub>2</sub></td>
+                        <td>PM<sub>10</sub></td>
+                    </tr>
+                    <tr>
+                        <td>Good</td>
+                        <td>1</td>
+                        <td>0-4400</td>
+                        <td>0-40</td>
+                        <td>0-20</td>
+                    </tr>
+                    <tr>
+                        <td>Fair</td>
+                        <td>2</td>
+                        <td>4400-9400</td>
+                        <td>40-70</td>
+                        <td>20-50</td>
+                    </tr>
+                    <tr>
+                        <td>Moderate</td>
+                        <td>3</td>
+                        <td>9400-12400</td>
+                        <td>70-150</td>
+                        <td>50-100</td>
+                    </tr>
+                    <tr>
+                        <td>Poor</td>
+                        <td>4</td>
+                        <td>12400-15400</td>
+                        <td>150-200</td>
+                        <td>100-200</td>
+                    </tr>
+                    <tr>
+                        <td>Very Poor</td>
+                        <td>5</td>
+                        <td>&gt;15400</td>
+                        <td>&gt;200</td>
+                        <td>&gt;200</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="disclaimer">
+                <div>
+                    <p><b>CO</b> - Can cause fatigue, headaches, confusion, and dizziness.</p>
+                </div>
+                <div>
+                    <p><b>NO<sub>2</sub></b> - Can damage the human respiratory tract</p>
+                </div>
+                <div>
+                    <p><b>PM<sub>10</sub></b> - Can cause coughing and wheezing to asthma attacks and bronchitis to high
+                        blood pressure, heart attack, strokes, and premature death</p>
+                </div>
+            </div>
+        </div>
+        <div id="map"></div>
+        <div id="chart">
+            <div id="chart1"></div>
+            <div id="chart2"></div>
+            <div id="chart3"></div>
+        </div>
+
+        <div id="pollution">
+            <div>
+                <h4 class="co"><b>Carbon Monoxide (CO)</b></h4>
+                <p>Carbon Monoxide (CO) is a colorless, odorless gas that is produced by the incomplete combustion of
+                    fuels such as gasoline, natural gas, and wood. High levels of CO can cause headaches, dizziness,
+                    nausea, and even death. If you are exposed to high levels of CO, move to a well-ventilated area
+                    immediately and seek medical attention.</p>
+            </div>
+            <div>
+                <h4 class="no2"><b>Nitrogen Dioxide (NO<sub>2</sub>)</b></h4>
+                <p>Nitrogen Dioxide (NO<sub>2</sub>) is a reddish-brown gas that is primarily produced by the burning of
+                    fossil
+                    fuels. Exposure to high levels of NO<sub>2</sub> can cause respiratory issues such as coughing,
+                    wheezing, and
+                    shortness of breath. If you have a pre-existing respiratory condition such as asthma, exposure to
+                    NO<sub>2</sub> can exacerbate your symptoms. Avoid outdoor activities near busy roads and other
+                    areas with high
+                    traffic to minimize your exposure to NO<sub>2</sub>.</p>
+            </div>
+            <div>
+                <h4 class="pm10"><b>Particulate Matter 10 (PM<sub>10</sub>)</b></h4>
+                <p>Particulate Matter 10 (PM<sub>10</sub>) is a type of airborne particulate matter that is 10
+                    micrometers in
+                    diameter or smaller. PM<sub>10</sub> can come from sources such as vehicle exhaust, dust, and
+                    industrial
+                    emissions. Exposure to PM<sub>10</sub> can cause respiratory issues such as coughing, wheezing, and
+                    shortness
+                    of breath. If you are exposed to high levels of PM<sub>10</sub>, avoid outdoor activities and use
+                    air filters
+                    in your home to reduce your exposure.</p>
+            </div>
+        </div>
+
+        <div id="cta2">
+            <div id="tag2">
+                <h2>Stay informed.<br>Minimize your exposure.<br>Protect your respiratory health.</h2>
+            </div>
+        </div>
+        <!-- https://www.pexels.com/photo/sky-clouds-building-industry-39553/ -->
+        <div id="divider" class="bgimg1">
+        </div>
+
+        <div id="explain">
+            <div>
+                <h4><b>The Purpose</b></h4>
+                <p>If you are concerned about air pollution and its effects on your respiratory health, then this
+                    tracker is a valuable resource for you. Air pollution can have serious impacts on respiratory health
+                    and can exacerbate conditions such as asthma and bronchitis. Exposure to pollutants such as
+                    particulate matter, nitrogen dioxide, and carbon monoxide can cause respiratory issues such as
+                    coughing, wheezing, and shortness of breath. In addition, long-term exposure to air pollution has
+                    been linked to an increased risk of lung cancer, heart disease, and stroke.</p>
+            </div>
+            <div>
+                <h4><b>How it works</b></h4>
+                <p>The Air Pollution Tracker provides real-time information on the levels of pollutants in the air in
+                    your area, allowing you to make informed decisions about your outdoor activities and take steps to
+                    protect your respiratory health. By checking the tracker regularly, you can plan your day and avoid
+                    spending time in areas with high levels of pollution. The tracker also offers advice on how to
+                    reduce your exposure to pollutants, such as staying indoors when pollution levels are high, using
+                    air filters in your home, and avoiding exercising near busy roads.<br><br>
+
+                    Whether you have a pre-existing respiratory condition or simply want to stay informed about the air
+                    quality in your area, the Air Pollution Tracker is an essential tool for anyone who is concerned
+                    about their respiratory health. With its up-to-date information and helpful advice, the tracker can
+                    help you breathe easier and take steps to protect your health.</p>
+                <br>
+            </div>
+        </div>
+
+
+
+        <div id="cta3">
+            <div id="tag3">
+                <h2>Be the change for better air quality and healthier lungs.</h2>
+            </div>
+        </div>
+        <!-- https://www.pexels.com/photo/group-of-people-standing-inside-room-2608517/ -->
+        <div id="divider2" class="bgimg2">
+        </div>
+
+        <div id="involved">
+            <div>
+                <h4><b>The Impact</b></h4>
+                <p>Air pollution can have serious impacts on their respiratory health and overall well-being. Exposure
+                    to pollutants in the air can cause respiratory issues such as asthma and bronchitis, as well as
+                    increase the risk of lung cancer, heart disease, and stroke. In addition, air pollution can also
+                    harm the environment and contribute to climate change.</p>
+            </div>
+            <div>
+                <h4><b>Your Action</b></h4>
+                <p>Fortunately, there are steps that individuals can take to help reduce air pollution and protect their
+                    respiratory health. These include using public transportation or carpooling, reducing energy
+                    consumption at home, and supporting policies that promote clean energy and reduce emissions. By
+                    working together to address air pollution, we can create a healthier and more sustainable future for
+                    ourselves and future generations.</p>
+                <br>
+            </div>
+        </div>
+
+
+
+
+        <div id="footer">
+            <div>
+                <p>Built by Chan Ik Chris Jung with</p>
+            </div>
+            <div class="one"><a href="https://developer.mapquest.com/documentation/" target="_blank"><img
+                        src="https://developer.mapquest.com/documentation/assets/img/logos/logo-md.png" /></a></div>
+            <div class="two"><a href="https://openweathermap.org/api/air-pollution" target="_blank"><img
+                        src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" /></a>
+            </div>
+            <div class="three"><a href="https://plotly.com/javascript/" target="_blank"><img
+                        src="https://images.prismic.io/plotly-marketing-website-2/69e12d6a-fb65-4b6e-8423-9465a29c6028_plotly-logo-lg.png?auto=compress%2Cformat&fit=max&w=256" /></a>
+            </div>
+            <div class="four"><a href="https://chat.openai.com/" target="_blank"><img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/1200px-OpenAI_Logo.svg.png?20221228112417" /></a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Javascript goes after the page -->
+    <script src="./js/main.js"></script>
+</body>
+
+</html>
